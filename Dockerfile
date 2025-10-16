@@ -1,18 +1,34 @@
-# Use an official Python runtime as a parent image
+ Use an official lightweight Python image
 FROM python:3.9-slim
 
-# Set the working directory in the container
+# Set the working directory inside the container
 WORKDIR /app
 
-# Copy the current directory contents into the container at /app
-COPY . /app
+# Copy the requirements file into the container
+COPY requirements.txt requirements.txt
 
-# Install any needed packages specified in requirements.txt
-RUN pip install --no-cache-dir -r requirements.txt
+# Install the Python dependencies
+RUN pip install -r requirements.txt
 
-# Expose port 5000
-EXPOSE 5000
+# Copy your application code (app.py) into the container
+COPY app.py .
 
-# CRITICAL FIX: Run the app on host 0.0.0.0 to make it accessible
-ENV FLASK_APP=app.py
-CMD python -m flask run --host=0.0.0.0
+# Expose the port the app runs on
+EXPOSE 5002
+
+# --- THIS IS THE FIX ---
+# Command to run the Flask application on the correct port
+CMD ["flask", "run", "--host=0.0.0.0", "--port=5002"]
+```
+
+### Step 2: Commit and Push
+Save this change, commit it, and push it to your `main` branch. This will automatically trigger a new deployment.
+
+### Step 3: Verify the Success
+Wait for your dashboard to show **`SUCCESS`**.
+
+Now, go to your server terminal and run the final test:
+
+```bash
+curl http://localhost:5002
+
